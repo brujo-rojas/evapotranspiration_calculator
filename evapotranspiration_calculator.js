@@ -3,9 +3,9 @@ var stats = require("stats-lite");
 var request = require("request");
 var async = require("async");
 
-exports.calc = function(wundergroundKey, inputDate, pws, canopyReflectionCoefficient, callback) {
+exports.calc = function(wundergroundKey, inputDate, pws, canopyReflectionCoefficient, callback, fail) {
 
-  var day = moment(inputDate);
+  var day = moment(inputDate, "YYYY-MM-D");
 
   // http://api.wunderground.com/api/abdfo08898/history_20150522/q/pws: KNUQ.json
   var url = "http://api.wunderground.com/api/" + wundergroundKey + "/conditions/history_" + day.format("YYYYMMDD") + "/q/pws:" + pws + ".json";
@@ -13,9 +13,15 @@ exports.calc = function(wundergroundKey, inputDate, pws, canopyReflectionCoeffic
   async.waterfall([
     function(callback) {
       request(url, function (error, response, body) {
-        if(!error && response.statusCode === 200) {
+        if(!error && response.statusCode === 200 ) {
           var obj = JSON.parse(body);
-          callback(null, obj);
+          if(obj.history === undefined){
+            var err = new Error("WU error, no history found");
+            err.status = 404;
+            callback(err);
+          }else{
+            callback(null, obj);
+          }
         } else {
           callback(error);
         }
@@ -85,7 +91,7 @@ exports.calc = function(wundergroundKey, inputDate, pws, canopyReflectionCoeffic
     }
   ], function (err, result) {
     if(err){
-      return err;
+      return fail(err);
     }
     else {
       return callback(result);

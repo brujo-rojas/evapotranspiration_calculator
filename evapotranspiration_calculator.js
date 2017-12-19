@@ -41,10 +41,13 @@ exports.calc = function(wundergroundKey, inputDate, pws, canopyReflectionCoeffic
       var precip = Number(obj.history.dailysummary[0].precipm);
 
       var solarRadiationReadings = [];
+      var windSpeedReadings = [];
+      var gustReadings = [];
 
       for (var i = obj.history.observations.length - 1; i >= 0; i--) {
-        var solarRadiationReading = Number(obj.history.observations[i].solarradiation);
-        solarRadiationReadings.push(solarRadiationReading);
+        solarRadiationReadings.push(Number(obj.history.observations[i].solarradiation));
+        windSpeedReadings.push(Number(obj.history.observations[i].wspdm));
+        gustReadings.push(Number(obj.history.observations[i].wgustm));
       }
 
       // mean solar radiation
@@ -80,10 +83,15 @@ exports.calc = function(wundergroundKey, inputDate, pws, canopyReflectionCoeffic
           canopyReflectionCoefficient,
           day,
           {
-            minTemp: minTemp,
-            maxTemp: maxTemp,
-            meanTemp: meanTemp,
-            precip: precip
+            url                : url,
+            minTemp            : minTemp,
+            maxTemp            : maxTemp,
+            meanTemp           : meanTemp,
+            precip             : precip,
+            meanSolarRadiation : meanSolarRadiationW,
+            solarRadiations    : solarRadiationReadings,
+            windSpeeds         : windSpeedReadings,
+            gust               : gustReadings
           }
       );
 
@@ -340,3 +348,4 @@ function evapotranspiractionCalc(maxTempF, minTempF, meanSolarRadiationW, avgWin
   return data;
 
 }
+

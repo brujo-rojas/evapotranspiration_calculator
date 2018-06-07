@@ -5,7 +5,7 @@ A very small library to help in calculating evaportranspiration using weather un
 
 ## Installation
 
-  npm install evapotranspiration_calculator --save
+  npm install brujo-rojas/evapotranspiration_calculator --save
 
 ## Usage
 
